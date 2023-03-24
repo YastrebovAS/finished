@@ -78,7 +78,7 @@ class Correction_distributor{
     
     function get_articles(){
         $this->con->exec('LOCK TABLES version WRITE, version_redactor WRITE');
-        $getter = $this->con->prepare('SELECT name, approved, max(version_number) as version_number FROM version INNER JOIN version_redactor ON version_redactor.id_ver=version.id where version_redactor.id_red =:f and approved is NULL and stat<10 and stat>0 GROUP BY name');
+        $getter = $this->con->prepare('SELECT name, approved, version_number FROM version INNER JOIN version_redactor ON version_redactor.id_ver=version.id where version_redactor.id_red =:f and approved is NULL and stat = 3 GROUP BY name');
         $getter->bindValue('f',$this->get_redactor_by_name(),PDO::PARAM_INT);
         $result = $getter->execute();
         $res_array = $getter->fetchALL(PDO::FETCH_ASSOC);
@@ -86,7 +86,7 @@ class Correction_distributor{
         if(is_array($res_array)){
             for($i=0;$i<count($res_array);$i++){
                 echo('<h3>'.$res_array[$i]['name'].'</h3>');
-                echo('<p><a href="download_final.php?path=versions/'.$res_array[$i]['name'].$res_array[$i]['version_number'].$res_array[$i]['version_number'].'">Описание</a></p>');
+                echo('<p><a href="download_final.php?path=versions/'.$res_array[$i]['name'].$res_array[$i]['version_number'].'">Описание</a></p>');
                 echo('</br>');
                 
             };
@@ -193,7 +193,7 @@ class Correction_distributor{
             return 0;
         }
         $connection->exec('LOCK TABLE problem_list WRITE');
-        $inserter = $connection->prepare('INSERT INTO problem_list(txt, id_ver,sender) VALUES (:f,:t)');
+        $inserter = $connection->prepare('INSERT INTO problem_list(txt, id_ver,sender) VALUES (:f,:t, "red")');
         $inserter->bindParam('f',$_POST["problem"],PDO::PARAM_STR);
         $inserter->bindParam('t',$id,PDO::PARAM_INT);
         $result = $inserter->execute();
@@ -222,7 +222,6 @@ class Correction_distributor{
             //echo("Invalid username");
             die("Invalid title");
         }
-        echo($_POST['title2']);
         $id = $this->get_last_version_by_name($connection,$_POST["title2"]);
         if($id == -1){
         echo($_POST['title2']);

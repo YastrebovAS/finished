@@ -22,7 +22,7 @@ setcookie('admin', 'admin', time()+$lifetime,'/');
 $dis->show_all_zero_version_of_article();
 ?>
 <table>
-    <tr><th><h3>Отправьте нулевую версию оценщику</h3></th></tr>
+    <tr><th><h3>Отправьте заявку оценщику</h3></th></tr>
     <tr>
         <td>
             <form method = "post" enctype="multipart/form-data">

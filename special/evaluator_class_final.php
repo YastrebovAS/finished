@@ -79,8 +79,8 @@ function article_evaluator_show($connection){
     $connection->exec('UNLOCK TABLES');
     for($i=0;$i<count($result_array);$i++){
         echo('<h3>'.$result_array[$i]['name'].'</h3>');
-        echo('<p><a href="download_final.php?path=request/'.$result_array[$i]['name'].$result_array[$i]['last_version'].$result_array[$i]['last_version'].'">Заявка</a></p>');
-        echo('<p><a href="download_final.php?path=versions/'.$result_array[$i]['name'].$result_array[$i]['last_version'].$result_array[$i]['last_version'].'">Описание</a></p>');
+        echo('<p><a href="download_final.php?path=request/'.$result_array[$i]['name'].$result_array[$i]['last_version'].'">Заявка</a></p>');
+        echo('<p><a href="download_final.php?path=versions/'.$result_array[$i]['name'].$result_array[$i]['last_version'].'">Описание</a></p>');
     }
 
 };

@@ -80,25 +80,21 @@ class Author{
             $pnam = $title.$version;
             move_uploaded_file($tname1, 'D:\Myssp\versions' . '/' .$pnam);
             move_uploaded_file($tname2, 'D:\Myssp\request' . '/' .$pnam);
-            // Вставка 0 версии в таблицу со всеми версиями
             $inserter = $this->con->prepare("INSERT INTO version(name,stat,version_number) VALUES (:name1, :stat,:version1)");
             $inserter->bindParam(':name1', $title, PDO::PARAM_STR);
             $inserter->bindValue(':stat', 1, PDO::PARAM_INT);
             $inserter->bindValue(':version1', $version, PDO::PARAM_INT);
             $result = $inserter->execute();
-            //Получение id этой нулевой версии
             $getter_new = $this->con->prepare("SELECT id FROM version WHERE name=:name1");
             $getter_new->bindParam("name1", $title, PDO::PARAM_STR);
             $result1 = $getter_new->execute();
             $result1_ar = $getter_new->fetchALL(PDO::FETCH_ASSOC);
             $version_id = $result1_ar[0]["id"];
-            //Получение id автора
             $getter_new1 = $this->con->prepare("SELECT id FROM author WHERE username=:name1");
             $getter_new1->bindParam("name1", $this->name, PDO::PARAM_STR);
             $result11 = $getter_new1->execute();
             $result11_ar = $getter_new1->fetchALL(PDO::FETCH_ASSOC);
             $author_id = $result11_ar[0]["id"];
-            //Запись в таблицу отправки и получений версий автором
             $inserter1 = $this->con->prepare("INSERT INTO send_recieve(id_a, id_ver) VALUES (:author_id, :ver_id)");
             $inserter1->bindParam(':author_id', $author_id, PDO::PARAM_INT);
             $inserter1->bindParam(':ver_id', $version_id, PDO::PARAM_INT);
@@ -143,15 +139,21 @@ class Author{
             $approval->bindValue('t',$_POST["title1"],PDO::PARAM_STR);
             $approval->execute();
             $res_array = $approval->fetchALL(PDO::FETCH_ASSOC);
-            if(count($res_array)>0){
+            if(count($res_array)>0 and $res_array[0]['approved'] != NULL){
                 echo('<h3>Невозможно получить патент на уже одобренное изобретение<h3>');
                 return 0;
             }
+
+
             $this->con->exec('Start transaction');
             $this->con->exec('LOCK TABLES version WRITE, author WRITE, send_recieve WRITE, version_evaluator WRITE');
 
             $title = $_POST["title1"];
+            if($this->name == 'Alex'){sleep(10);}
+            if($title == 'testoflocker1'){
 
+                $this->con->exec('UNLOCK TABLES');
+            }
             $getter = $this->con->prepare('SELECT * FROM version WHERE name=:name1 ORDER BY version_number DESC');
             $getter->bindValue('name1',$title,PDO::PARAM_STR);
             $result = $getter->execute();
@@ -187,8 +189,8 @@ class Author{
                     $st = $this->stater($res_array[$i]['name']);
                     echo('<h3> ======================= </h3>');
                     echo('<h3>'.$res_array[$i]['name']." Версия номер ".$res_array[$i]['version_number'].'</h3>');
-                    echo('<p><a href="download_final.php?path=versions/'.$res_array[$i]['name'].$res_array[$i]['version_number'].$res_array[$i]['version_number'].'">Описание</a></p>');
-                    echo('<p><a href="download_final.php?path=request/'.$res_array[$i]['name'].$res_array[$i]['version_number'].$res_array[$i]['version_number'].'">Заявка</a></p>');
+                    echo('<p><a href="download_final.php?path=versions/'.$res_array[$i]['name'].$res_array[$i]['version_number'].'">Описание</a></p>');
+                    echo('<p><a href="download_final.php?path=request/'.$res_array[$i]['name'].$res_array[$i]['version_number'].'">Заявка</a></p>');
                     switch ($st){
                         case 1:
                             echo('<h3>Заявка на стадии распределения</h3>');

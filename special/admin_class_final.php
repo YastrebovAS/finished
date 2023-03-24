@@ -41,13 +41,13 @@ class Admin{
         }
     }
     function show_all_zero_version_of_article(){
-        $getter = $this->con->prepare("SELECT name FROM version WHERE version_number=0");
+        $getter = $this->con->prepare("SELECT name,version_number FROM version WHERE stat = 1");
         $getter->execute();
         $res_array = $getter->fetchALL(PDO::FETCH_ASSOC);
         for($i =0;$i<count($res_array);$i++){
             echo('<h3>'.$res_array[$i]['name'].'</h3>');
-            echo('<p><a href="download_final.php?path=versions/'.$res_array[$i]['name'].'00">Описание</a></p>');
-            echo('<p><a href="download_final.php?path=request/'.$res_array[$i]['name'].'00">Заявка</a></p>');
+            echo('<p><a href="download_final.php?path=versions/'.$res_array[$i]['name'].$res_array[$i]['version_number'].'">Описание</a></p>');
+            echo('<p><a href="download_final.php?path=request/'.$res_array[$i]['name'].$res_array[$i]['version_number'].'">Заявка</a></p>');
 
         }
     }
@@ -107,63 +107,9 @@ class Admin{
         }
 
     }
-    function if_there_are_free(){
-        $getter = $this->con->prepare('SELECT * from version where stat =10');
-        $getter->execute();
-        $res_array = $getter->fetchALL(PDO::FETCH_ASSOC);
-        $getter = $this->con->prepare('SELECT * from plan_num where fulled = 0');
-        $getter->execute();
-        $res_array2 = $getter->fetchALL(PDO::FETCH_ASSOC);
-        for($i=0;$i<$res_array2[0]['number_of_articles'];$i++){
-            if(count($res_array)>$i){
-                $inserter = $this->con->prepare('INSERT into fills(id_ver, id_plan) VALUES(:t,:f)');
-                $inserter->bindParam('t',$res_array[$i]['id'],PDO::PARAM_INT);
-                $inserter->bindParam('f',$res_array2[$i]['id'],PDO::PARAM_INT);
-                $inserter->execute();
-                $updater = $this->con->prepare('UPDATE version SET stat=11 WHERE id=:t');
-                $updater->bindValue('t',$res_array[$i]['id'],PDO::PARAM_INT);
-                $updater->execute();
-            }
-        }
-
-    }
-    function if_you_can_create_number(){
-        $getter = $this->con->prepare('SELECT min(fulled) as f from plan_num');
-        $getter->execute();
-        $res_array = $getter->fetchALL(PDO::FETCH_ASSOC);
-        $getter = $this->con->prepare('SELECT count(id) as c from plan_num');
-        $getter->execute();
-        $res_array2 = $getter->fetchALL(PDO::FETCH_ASSOC);
-        if($res_array2[0]['c']==0){
-            return 1;
-        }
-        if($res_array[0]['f']==0){
-            return 0;
-        }
-        return 1;
-    }
-    function create_new_number(){
-        if(isset($_POST["submit2"]) and $_POST["number"]>0){
-            $this->con->exec('LOCK TABLES plan_num WRITE, version WRITE, fills WRITE');
-            //echo('i am here');
-            if($this->if_you_can_create_number()==0){
-                echo('<h3>создавать новый номер нет нужды<h3>');
-                return 0;
-            }
-            $inserter = $this->con->prepare("INSERT INTO plan_num(name, number_of_articles) VALUES(:t,:f)");
-            $inserter->bindParam('t',$_POST["name"],PDO::PARAM_STR);
-            $inserter->bindParam('f',$_POST["number"],PDO::PARAM_INT);
-            $inserter->execute();
-            $this->if_there_are_free();
-            $this->con->exec('UNLOCK TABLES');
-
-        }
-
-    }
     function logout_from_session(){
         if(isset($_POST['submit_exit']) or !isset($_COOKIE['admin'])){
             //print_r($_COOKIE);
-            //sleep(50);
             unset($_SESSION['session_username']);
             unset($_FILES["fileupload"]);
             unset($_COOKIE['admin']);

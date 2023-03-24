@@ -82,7 +82,7 @@ article_evaluator_show($connection);
         </tr>
     </table>
 <table>
-    <tr><th><h3>Посмотрите, какие ошибки авторы нашли у вас:</h3></th><th><h3>Занятость редакторов</h3></th> </tr>
+    <tr><th><h3>Ответы авторов:</h3></th><th><h3>Занятость редакторов</h3></th> </tr>
     <tr>
     <td>
     <?php

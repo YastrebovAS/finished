@@ -124,16 +124,13 @@ INSERT INTO version(name, stat, version_number,approved) VALUES
     ('newverb', 2, 0, FALSE),
     ('newverc', 3, 0, FALSE),
     ('newverd', 1, 0, FALSE),
-
 INSERT INTO send_recieve(id_a, id_ver) VALUES
     (1, (SELECT id FROM version WHERE name='newvera')),
     (1, (SELECT id FROM version WHERE name='newverb')),
     (1, (SELECT id FROM version WHERE name='newverc')),
     (1, (SELECT id FROM version WHERE name='newverd'));
-
 INSERT INTO version_redactor(id_red,id_ver) VALUES
 	(1, (SELECT id FROM version WHERE name='newversionc'));
-
 INSERT INTO version_evaluator(id_ev,id_ver) VALUES
 	(1, (SELECT id FROM version WHERE name='newverb')),
         (1, (SELECT id FROM version WHERE name='newverc'));

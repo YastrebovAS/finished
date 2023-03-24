@@ -49,7 +49,7 @@
         $existigs_corr->execute();
         $spec_sum = $existigs_auth->rowCount()+$existigs_red->rowCount()+$existigs_corr->rowCount();
         if($spec_sum > 0){
-            echo '<h3>Вы уже зарегесрированы в системе, или пароль, почта, имя уже существует</h3>';
+            echo '<h3>Такие пароль, имя или почта уже присутствуют в системе</h3>';
             echo '<a href="login_final.php">"Вход"</a>';
         }
         else{
